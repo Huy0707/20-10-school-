@@ -174,7 +174,7 @@ function createFallingText() {
     text.className = "falling-text";
     text.textContent = texts[Math.floor(Math.random() * texts.length)];
     text.style.left = `${Math.random() * window.innerWidth}px`;
-    text.style.transform = `translateZ(${(Math.random() - 0.5) * 150}px)`;
+    text.style.transform = `translateY(0)`;
     text.style.willChange = "transform, opacity";
     scene.appendChild(text);
 
@@ -188,7 +188,7 @@ function createFallingIcon() {
     icon.className = "falling-icon";
     icon.textContent = icons[Math.floor(Math.random() * icons.length)];
     icon.style.left = `${Math.random() * window.innerWidth}px`;
-    icon.style.transform = `translateZ(${(Math.random() - 0.5) * 300}px)`;
+    icon.style.transform = `translateY(0)`;
     scene.appendChild(icon);
 
     setTimeout(() => {
