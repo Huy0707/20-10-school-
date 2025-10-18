@@ -173,9 +173,20 @@ function createFallingText() {
     const text = document.createElement("div");
     text.className = "falling-text";
     text.textContent = texts[Math.floor(Math.random() * texts.length)];
+    const gridSize = 5;
+    const cellWidth = window.innerWidth / gridSize;
+    const cellHeight = window.innerHeight / gridSize;
+    const gridX = Math.floor(Math.random() * gridSize);
+    const gridY = Math.floor(Math.random() * gridSize);
+    const left = gridX * cellWidth + Math.random() * (cellWidth * 0.8);
     text.style.left = `${Math.random() * window.innerWidth}px`;
     text.style.transform = `translateY(0)`;
     text.style.willChange = "transform, opacity";
+    const screenHeight = Math.max(document.documentElement.scrollHeight, window.innerHeight);
+    const fallDistance = screenHeight + 100; // Thêm 100px để vượt ra ngoài
+    const fallTime = (fallDistance / window.innerHeight) * 6; // Tính thời gian dựa trên chiều cao (tối thiểu 6s)
+
+    text.style.animation = `fall ${fallTime}s linear forwards`;
     scene.appendChild(text);
 
     setTimeout(() => {
@@ -187,8 +198,20 @@ function createFallingIcon() {
     const icon = document.createElement("div");
     icon.className = "falling-icon";
     icon.textContent = icons[Math.floor(Math.random() * icons.length)];
+    const gridSize = 5;
+    const cellWidth = window.innerWidth / gridSize;
+    const cellHeight = window.innerHeight / gridSize;
+    const gridX = Math.floor(Math.random() * gridSize);
+    const gridY = Math.floor(Math.random() * gridSize);
+    const left = gridX * cellWidth + Math.random() * (cellWidth * 0.8);
     icon.style.left = `${Math.random() * window.innerWidth}px`;
     icon.style.transform = `translateY(0)`;
+    icon.style.willChange = "transform, opacity";
+    const screenHeight = Math.max(document.documentElement.scrollHeight, window.innerHeight);
+    const fallDistance = screenHeight + 100;
+    const fallTime = (fallDistance / window.innerHeight) * 6;
+
+    icon.style.animation = `fall ${fallTime}s linear forwards`;
     scene.appendChild(icon);
 
     setTimeout(() => {
