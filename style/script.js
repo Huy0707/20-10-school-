@@ -164,6 +164,7 @@ function createFallingText() {
     const cellHeight = window.innerHeight / gridSize;
     const gridX = Math.floor(Math.random() * gridSize);
     const gridY = Math.floor(Math.random() * gridSize);
+    const left = Math.min(gridX * cellWidth + Math.random() * (cellWidth * 0.8), window.innerWidth - 50);
     const left = gridX * cellWidth + Math.random() * (cellWidth * 0.8);
     text.style.left = `${Math.random() * window.innerWidth}px`;
     text.style.transform = `translateY(0)`;
@@ -189,6 +190,7 @@ function createFallingIcon() {
     const cellHeight = window.innerHeight / gridSize;
     const gridX = Math.floor(Math.random() * gridSize);
     const gridY = Math.floor(Math.random() * gridSize);
+    const left = Math.min(gridX * cellWidth + Math.random() * (cellWidth * 0.8), window.innerWidth - 30);
     const left = gridX * cellWidth + Math.random() * (cellWidth * 0.8);
     icon.style.left = `${Math.random() * window.innerWidth}px`;
     icon.style.transform = `translateY(0)`;

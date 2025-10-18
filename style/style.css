@@ -56,6 +56,9 @@ html, body {
     font-size: 3vmin;
     color: #0ff;
     white-space: nowrap;
+    max-width: 90vw; /* Giới hạn chiều rộng tối đa là 90% viewport */
+    overflow: hidden; /* Ẩn phần vượt ra */
+    text-overflow: ellipsis;
     animation: fall 8s linear forwards;
     /*hueShift 8s linear infinite*/
     filter: hue-rotate(0deg);
@@ -68,6 +71,7 @@ html, body {
     position: absolute;
     top: -10vh;
     font-size: 2.5vmin;
+    max-width: 5vw;
     animation: fall 8s linear forwards;
     pointer-events: none;
 }
