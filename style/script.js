@@ -155,6 +155,8 @@ const readerDiv = document.getElementById('reader');
 const qrImage = document.getElementById('qrImage');
 let html5QrCode;
 
+let activeTexts = []; // Mảng lưu trữ các phần tử đang rơi
+
 function createFallingText() {
     const text = document.createElement("div");
     text.className = "falling-text";
@@ -163,18 +165,44 @@ function createFallingText() {
     const cellWidth = window.innerWidth / gridSize;
     const cellHeight = window.innerHeight / gridSize;
     const gridX = Math.floor(Math.random() * gridSize);
-    const gridY = Math.floor(Math.random() * gridSize);
     const left = Math.min(gridX * cellWidth + Math.random() * (cellWidth * 0.8), window.innerWidth - 50);
+
+    // Tính toán top ban đầu và tránh chồng lấn
+    let top = -10 * (Math.random() + 0.1) * vhToPx(1); // Bắt đầu từ -10vh ngẫu nhiên
+    let overlap = true;
+
+    while (overlap) {
+        overlap = false;
+        for (let activeText of activeTexts) {
+            const activeTop = parseFloat(activeText.style.top) || 0;
+            const activeHeight = activeText.getBoundingClientRect().height;
+            const newHeight = text.getBoundingClientRect().height;
+            if (Math.abs(top - activeTop) < (activeHeight + newHeight + 20)) { // Tăng khoảng cách tối thiểu
+                overlap = true;
+                top -= activeHeight + 20; // Điều chỉnh top để tránh chồng lấn
+                break;
+            }
+        }
+    }
+
     text.style.left = `${left}px`;
+    text.style.top = `${top}px`;
     text.style.transform = `translateY(0)`;
     text.style.willChange = "transform, opacity";
+
     const screenHeight = Math.max(document.documentElement.scrollHeight, window.innerHeight);
     const fallDistance = screenHeight + 100;
     const fallTime = (fallDistance / window.innerHeight) * 6;
+
     text.style.animation = `fall ${fallTime}s linear forwards`;
     scene.appendChild(text);
+    activeTexts.push(text);
+
     setTimeout(() => {
-        if (text.parentElement) text.remove();
+        if (text.parentElement) {
+            text.remove();
+            activeTexts = activeTexts.filter(t => t !== text);
+        }
     }, fallTime * 1000);
 }
 
@@ -186,19 +214,49 @@ function createFallingIcon() {
     const cellWidth = window.innerWidth / gridSize;
     const cellHeight = window.innerHeight / gridSize;
     const gridX = Math.floor(Math.random() * gridSize);
-    const gridY = Math.floor(Math.random() * gridSize);
     const left = Math.min(gridX * cellWidth + Math.random() * (cellWidth * 0.8), window.innerWidth - 30);
+
+    // Tính toán top ban đầu và tránh chồng lấn
+    let top = -10 * (Math.random() + 0.1) * vhToPx(1);
+    let overlap = true;
+
+    while (overlap) {
+        overlap = false;
+        for (let activeText of activeTexts) {
+            const activeTop = parseFloat(activeText.style.top) || 0;
+            const activeHeight = activeText.getBoundingClientRect().height;
+            const newHeight = icon.getBoundingClientRect().height;
+            if (Math.abs(top - activeTop) < (activeHeight + newHeight + 20)) {
+                overlap = true;
+                top -= activeHeight + 20;
+                break;
+            }
+        }
+    }
+
     icon.style.left = `${left}px`;
+    icon.style.top = `${top}px`;
     icon.style.transform = `translateY(0)`;
     icon.style.willChange = "transform, opacity";
+
     const screenHeight = Math.max(document.documentElement.scrollHeight, window.innerHeight);
     const fallDistance = screenHeight + 100;
     const fallTime = (fallDistance / window.innerHeight) * 6;
+
     icon.style.animation = `fall ${fallTime}s linear forwards`;
     scene.appendChild(icon);
+    activeTexts.push(icon);
+
     setTimeout(() => {
-        if (icon.parentElement) icon.remove();
+        if (icon.parentElement) {
+            icon.remove();
+            activeTexts = activeTexts.filter(t => t !== icon);
+        }
     }, fallTime * 1000);
+}
+
+function vhToPx(vh) {
+    return (vh * window.innerHeight) / 100;
 }
 
 setInterval(() => {
