@@ -53,10 +53,11 @@ html, body {
 .falling-text {
     position: absolute;
     top: -10vh;
-    font-size: 4vmin;
+    font-size: 3vmin;
     color: #0ff;
     white-space: nowrap;
-    animation: fall 8s linear forwards, hueShift 8s linear infinite;
+    animation: fall 8s linear forwards;
+    /*hueShift 8s linear infinite*/
     filter: hue-rotate(0deg);
     text-shadow: 0 0 10px #0ff, 0 0 20px #0ff, 0 0 10px #0ff;
     backface-visibility: hidden;
@@ -66,7 +67,7 @@ html, body {
 .falling-icon {
     position: absolute;
     top: -10vh;
-    font-size: 3.5vmin;
+    font-size: 2.5vmin;
     animation: fall 8s linear forwards;
     pointer-events: none;
 }

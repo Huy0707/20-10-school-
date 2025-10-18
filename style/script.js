@@ -201,7 +201,7 @@ setInterval(() => {
         createFallingText();
         createFallingIcon();
     }
-}, 500);
+}, 600);
 
 function playMusicOnce() {
     if (audio.paused && scene.style.display === 'block') {
@@ -220,6 +220,7 @@ function playMusicOnce() {
     document.removeEventListener("click", playMusicOnce);
     document.removeEventListener("touchstart", playMusicOnce);
 }
+let sparkleCount = 0;
 
 function createSparkles(count = 20) {
     for (let i = 0; i < count; i++) {
@@ -230,10 +231,25 @@ function createSparkles(count = 20) {
         s.style.animationDuration = `${3 + Math.random() * 3}s`;
         s.style.animationDelay = `${Math.random() * 4}s`;
         sparkleContainer.appendChild(s);
+        sparkleCount++;
     }
 }
+function updateSparkles() {
+    if (sparkleCount < 20 && Math.random() < 0.1) { // Thêm sparkle ngẫu nhiên với xác suất thấp
+        const s = document.createElement("div");
+        s.className = "sparkle";
+        s.style.top = `${Math.random() * 95}%`;
+        s.style.left = `${Math.random() * 95}%`;
+        s.style.animationDuration = `${3 + Math.random() * 3}s`;
+        s.style.animationDelay = `${Math.random() * 4}s`;
+        sparkleContainer.appendChild(s);
+        sparkleCount++;
+    }
+    requestAnimationFrame(updateSparkles);
+}
 
-createSparkles(40);
+createSparkles(20); // Khởi tạo ban đầu
+requestAnimationFrame(updateSparkles); // Bắt đầu vòng lặp
 
 // Drag 3D effect
 let isDragging = false;
