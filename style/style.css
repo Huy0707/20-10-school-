@@ -85,8 +85,11 @@ html, body {
         opacity: 1;
     }
     100% {
-        top: 120vh;
+        top: 60vh;
         opacity: 0;
+    }
+    .falling-text, .falling-icon {
+        animation: fall 4s linear forwards; /* Giảm từ 8s xuống 4s */
     }
 }
 
@@ -170,6 +173,6 @@ html, body {
 }
 
 @media (max-width: 600px) {
-    .falling-text { font-size: 5vmin; }
-    .falling-icon { font-size: 4vmin; }
+    .falling-text { font-size: 4vmin; }
+    .falling-icon { font-size: 3vmin; }
 }

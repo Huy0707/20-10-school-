@@ -197,7 +197,7 @@ function createFallingIcon() {
 }
 
 setInterval(() => {
-    if (scene.style.display === 'block' && scene.childElementCount < 25) {
+    if (scene.style.display === 'block' && scene.childElementCount < 15) {
         createFallingText();
         createFallingIcon();
     }
@@ -342,6 +342,18 @@ function startScan() {
         }
     }).catch(err => console.log('getCameras error:', err));
 }
+let lastTime = 0;
+function animate(time) {
+    if (time - lastTime > 500) { // Khoảng cách 500ms
+        if (scene.style.display === 'block' && scene.childElementCount < 15) {
+            createFallingText();
+            createFallingIcon();
+        }
+        lastTime = time;
+    }
+    requestAnimationFrame(animate);
+}
+requestAnimationFrame(animate);
 
 // Khởi động
 createShareQr();
