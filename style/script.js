@@ -3,7 +3,7 @@ const sparkleContainer = document.getElementById("sparkles");
 const audio = document.getElementById("sound");
 
 const texts = [
-    "🎉Chúc mừng 20-10 nhó🎉",
+    "🎉Chúc mừng 20-10 Thảo Nguyên nhó🎉",
     "🎉Chúc mừng 20-10 nhó🎉",
     "🎉Chúc mừng 20-10 nhó🎉",
     "🎉Chúc mừng 20-10 nhó🎉",
