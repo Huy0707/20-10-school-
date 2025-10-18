@@ -315,7 +315,7 @@ function updateSparkles() {
 
 createSparkles(20); // Khởi tạo ban đầu
 requestAnimationFrame(updateSparkles); // Bắt đầu vòng lặp
-window.onresize = handleResize;
+
 // Drag 3D effect
 let isDragging = false;
 let lastTouch = { x: 0, y: 0 };
