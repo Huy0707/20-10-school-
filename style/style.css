@@ -85,6 +85,10 @@ html, body {
     20% {
         opacity: 1;
     }
+    90% {
+        opacity: 1;
+        top: 110vh;
+    }
     100% {
         top: 60vh;
         opacity: 0;

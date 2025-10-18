@@ -180,7 +180,7 @@ function createFallingText() {
 
     setTimeout(() => {
         if (text.parentElement) text.remove();
-    }, 6000);
+    }, 8000);
 }
 
 function createFallingIcon() {
@@ -193,7 +193,7 @@ function createFallingIcon() {
 
     setTimeout(() => {
         if (icon.parentElement) icon.remove();
-    }, 6000);
+    }, 8000);
 }
 
 setInterval(() => {
