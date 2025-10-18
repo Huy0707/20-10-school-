@@ -154,11 +154,10 @@ const readerDiv = document.getElementById('reader');
 const qrImage = document.getElementById('qrImage');
 let html5QrCode;
 
-function createFallingText(index = 0) {
-    if (index >= texts.length) return; // Dừng khi hết danh sách
+function createFallingText() {
     const text = document.createElement("div");
     text.className = "falling-text";
-    text.textContent = texts[index];
+    text.textContent = texts[Math.floor(Math.random() * texts.length)];
     const gridSize = 5;
     const cellWidth = window.innerWidth / gridSize;
     const gridX = Math.floor(Math.random() * gridSize);
@@ -178,7 +177,6 @@ function createFallingText(index = 0) {
 
     setTimeout(() => {
         if (text.parentElement) text.remove();
-        createFallingText(index + 1); // Tạo chữ tiếp theo sau khi chữ hiện tại rơi xong
     }, fallTime * 1000);
 }
 
@@ -209,12 +207,21 @@ function createFallingIcon() {
 }
 
 function startFallingAnimation() {
-    createFallingText(0); // Bắt đầu với chữ đầu tiên
-    setInterval(() => {
-        if (scene.style.display === 'block' && scene.childElementCount < 1) {
-            createFallingIcon(); // Thêm icon ngẫu nhiên khi không có chữ
+    const intervalId = setInterval(() => {
+        if (scene.style.display === 'block' && scene.childElementCount < 5) { // Giới hạn 5 phần tử cùng lúc
+            createFallingText();
+            if (Math.random() < 0.3) createFallingIcon(); // 30% cơ hội thêm icon
         }
-    }, 2000); // Thêm icon mỗi 2 giây nếu không có chữ
+    }, 500); // Tạo mới mỗi 500ms
+
+    // Dừng interval khi scene ẩn
+    const observer = new MutationObserver(() => {
+        if (scene.style.display !== 'block') {
+            clearInterval(intervalId);
+            observer.disconnect();
+        }
+    });
+    observer.observe(scene, { attributes: true, attributeFilter: ['style'] });
 }
 
 function playMusicOnce() {
