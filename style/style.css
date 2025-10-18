@@ -59,7 +59,9 @@ html, body {
     animation: fall 8s linear forwards, hueShift 8s linear infinite;
     transform-style: preserve-3d;
     filter: hue-rotate(0deg);
-    text-shadow: 0 0 10px #0ff, 0 0 20px #0ff, 0 0 40px #0ff;
+    text-shadow: 0 0 10px #0ff, 0 0 20px #0ff, 0 0 10px #0ff;
+    backface-visibility: hidden;
+    will-change: transform, opacity;
 }
 
 .falling-icon {

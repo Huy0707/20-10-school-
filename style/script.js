@@ -174,7 +174,8 @@ function createFallingText() {
     text.className = "falling-text";
     text.textContent = texts[Math.floor(Math.random() * texts.length)];
     text.style.left = `${Math.random() * window.innerWidth}px`;
-    text.style.transform = `translateZ(${(Math.random() - 0.5) * 300}px)`;
+    text.style.transform = `translateZ(${(Math.random() - 0.5) * 150}px)`;
+    text.style.willChange = "transform, opacity";
     scene.appendChild(text);
 
     setTimeout(() => {
@@ -196,11 +197,11 @@ function createFallingIcon() {
 }
 
 setInterval(() => {
-    if (scene.style.display === 'block' && scene.childElementCount < 40) {
+    if (scene.style.display === 'block' && scene.childElementCount < 25) {
         createFallingText();
         createFallingIcon();
     }
-}, 300);
+}, 500);
 
 function playMusicOnce() {
     if (audio.paused && scene.style.display === 'block') {
@@ -220,7 +221,7 @@ function playMusicOnce() {
     document.removeEventListener("touchstart", playMusicOnce);
 }
 
-function createSparkles(count = 40) {
+function createSparkles(count = 20) {
     for (let i = 0; i < count; i++) {
         const s = document.createElement("div");
         s.className = "sparkle";
