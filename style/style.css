@@ -56,8 +56,8 @@ html, body {
     font-size: 3vmin;
     color: #0ff;
     max-width: 90vw;
-    word-wrap: break-word;
-    line-height: 1.5;
+    word-wrap: break-word; /* Cho phép xuống dòng */
+    line-height: 1.5; /* Tăng khoảng cách dòng */
     animation: fall 6s linear forwards;
     filter: hue-rotate(0deg);
     text-shadow: 0 0 10px #0ff, 0 0 20px #0ff, 0 0 10px #0ff;
@@ -173,6 +173,70 @@ html, body {
     to { opacity: 1; transform: translateY(0); }
 }
 
+/* Media query cho màn hình ngang (landscape) trên điện thoại */
+@media (max-width: 768px) and (orientation: landscape) {
+    html, body {
+        height: auto;
+        min-height: 100vh;
+    }
+
+    .scene {
+        height: 100vh; /* Đảm bảo scene chiếm toàn bộ chiều cao */
+    }
+
+    .falling-text {
+        font-size: 2.5vmin; /* Giảm kích thước font cho màn hình ngang */
+        max-width: 80vw; /* Giảm chiều rộng tối đa để tránh tràn */
+        line-height: 1.3; /* Điều chỉnh khoảng cách dòng */
+    }
+
+    .falling-icon {
+        font-size: 2vmin; /* Giảm kích thước icon */
+        max-width: 4vw;
+    }
+
+    #qr-section {
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        gap: 20px; /* Khoảng cách giữa QR và nút */
+    }
+
+    #qr-section h1 {
+        font-size: 1.5em; /* Giảm kích thước tiêu đề */
+        margin-bottom: 0;
+    }
+
+    #qr-section img {
+        width: 150px;
+        height: 150px;
+        margin-bottom: 0;
+    }
+
+    #qr-section button {
+        padding: 8px 15px;
+        font-size: 14px;
+    }
+
+    #scan-section {
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        gap: 20px;
+    }
+
+    #scan-section h1 {
+        font-size: 1.5em;
+        margin-bottom: 0;
+    }
+
+    #reader {
+        width: 200px;
+        height: 200px;
+    }
+}
+
+/* Media query chung cho thiết bị di động */
 @media (max-width: 600px) {
     .falling-text { font-size: 4vmin; }
     .falling-icon { font-size: 3vmin; }

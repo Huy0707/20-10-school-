@@ -2,7 +2,7 @@ const scene = document.getElementById("scene");
 const sparkleContainer = document.getElementById("sparkles");
 const audio = document.getElementById("sound");
 
-const texts = [
+const initialTexts = [
     "🎉Chúc mừng 20-10 Hoàng Trần Phúc An 12/1 nhó🎉",
     "🎉Chúc mừng 20-10 Ngô Ngọc Bảo Châu 12/1 nhó🎉",
     "🎉Chúc mừng 20-10 Nguyễn Quỳnh Chi 12/1 nhó🎉",
@@ -146,6 +146,7 @@ const texts = [
     "🎉Chúc mừng 20-10 Võ Phương Trinh 12/7 nhó🎉",
 ];
 
+let availableTexts = [...initialTexts]; // Sao chép mảng ban đầu để sử dụng
 
 const qrSection = document.getElementById('qr-section');
 const scanSection = document.getElementById('scan-section');
@@ -154,17 +155,44 @@ const readerDiv = document.getElementById('reader');
 const qrImage = document.getElementById('qrImage');
 let html5QrCode;
 
+let activeTexts = []; // Mảng lưu trữ các phần tử đang rơi
+
 function createFallingText() {
+    if (availableTexts.length === 0) {
+        availableTexts = [...initialTexts]; // Làm mới danh sách khi hết tên
+    }
+
     const text = document.createElement("div");
     text.className = "falling-text";
-    text.textContent = texts[Math.floor(Math.random() * texts.length)];
+    const randomIndex = Math.floor(Math.random() * availableTexts.length);
+    text.textContent = availableTexts[randomIndex];
+    availableTexts.splice(randomIndex, 1); // Xóa tên đã chọn khỏi danh sách
     const gridSize = 5;
     const cellWidth = window.innerWidth / gridSize;
+    const cellHeight = window.innerHeight / gridSize;
     const gridX = Math.floor(Math.random() * gridSize);
     const left = Math.min(gridX * cellWidth + Math.random() * (cellWidth * 0.8), window.innerWidth - 50);
 
+    // Tính toán top ban đầu và tránh chồng lấn
+    let top = -10 * (Math.random() + 0.1) * vhToPx(1); // Bắt đầu từ -10vh ngẫu nhiên
+    let overlap = true;
+
+    while (overlap) {
+        overlap = false;
+        for (let activeText of activeTexts) {
+            const activeTop = parseFloat(activeText.style.top) || 0;
+            const activeHeight = activeText.getBoundingClientRect().height;
+            const newHeight = text.getBoundingClientRect().height;
+            if (Math.abs(top - activeTop) < (activeHeight + newHeight + 20)) { // Tăng khoảng cách tối thiểu
+                overlap = true;
+                top -= activeHeight + 20; // Điều chỉnh top để tránh chồng lấn
+                break;
+            }
+        }
+    }
+
     text.style.left = `${left}px`;
-    text.style.top = `-10vh`;
+    text.style.top = `${top}px`;
     text.style.transform = `translateY(0)`;
     text.style.willChange = "transform, opacity";
 
@@ -174,9 +202,13 @@ function createFallingText() {
 
     text.style.animation = `fall ${fallTime}s linear forwards`;
     scene.appendChild(text);
+    activeTexts.push(text);
 
     setTimeout(() => {
-        if (text.parentElement) text.remove();
+        if (text.parentElement) {
+            text.remove();
+            activeTexts = activeTexts.filter(t => t !== text);
+        }
     }, fallTime * 1000);
 }
 
@@ -186,11 +218,30 @@ function createFallingIcon() {
     icon.textContent = icons[Math.floor(Math.random() * icons.length)];
     const gridSize = 5;
     const cellWidth = window.innerWidth / gridSize;
+    const cellHeight = window.innerHeight / gridSize;
     const gridX = Math.floor(Math.random() * gridSize);
     const left = Math.min(gridX * cellWidth + Math.random() * (cellWidth * 0.8), window.innerWidth - 30);
 
+    // Tính toán top ban đầu và tránh chồng lấn
+    let top = -10 * (Math.random() + 0.1) * vhToPx(1);
+    let overlap = true;
+
+    while (overlap) {
+        overlap = false;
+        for (let activeText of activeTexts) {
+            const activeTop = parseFloat(activeText.style.top) || 0;
+            const activeHeight = activeText.getBoundingClientRect().height;
+            const newHeight = icon.getBoundingClientRect().height;
+            if (Math.abs(top - activeTop) < (activeHeight + newHeight + 20)) {
+                overlap = true;
+                top -= activeHeight + 20;
+                break;
+            }
+        }
+    }
+
     icon.style.left = `${left}px`;
-    icon.style.top = `-10vh`;
+    icon.style.top = `${top}px`;
     icon.style.transform = `translateY(0)`;
     icon.style.willChange = "transform, opacity";
 
@@ -200,29 +251,26 @@ function createFallingIcon() {
 
     icon.style.animation = `fall ${fallTime}s linear forwards`;
     scene.appendChild(icon);
+    activeTexts.push(icon);
 
     setTimeout(() => {
-        if (icon.parentElement) icon.remove();
+        if (icon.parentElement) {
+            icon.remove();
+            activeTexts = activeTexts.filter(t => t !== icon);
+        }
     }, fallTime * 1000);
 }
 
-function startFallingAnimation() {
-    const intervalId = setInterval(() => {
-        if (scene.style.display === 'block' && scene.childElementCount < 5) { // Giới hạn 5 phần tử cùng lúc
-            createFallingText();
-            if (Math.random() < 0.3) createFallingIcon(); // 30% cơ hội thêm icon
-        }
-    }, 500); // Tạo mới mỗi 500ms
-
-    // Dừng interval khi scene ẩn
-    const observer = new MutationObserver(() => {
-        if (scene.style.display !== 'block') {
-            clearInterval(intervalId);
-            observer.disconnect();
-        }
-    });
-    observer.observe(scene, { attributes: true, attributeFilter: ['style'] });
+function vhToPx(vh) {
+    return (vh * window.innerHeight) / 100;
 }
+
+setInterval(() => {
+    if (scene.style.display === 'block' && scene.childElementCount < 15) {
+        createFallingText();
+        createFallingIcon();
+    }
+}, 600);
 
 function playMusicOnce() {
     if (audio.paused && scene.style.display === 'block') {
@@ -339,7 +387,6 @@ function checkQueryShowGreeting() {
         qrSection.style.display = 'none';
         scanSection.style.display = 'none';
         scene.style.display = 'block';
-        startFallingAnimation(); // Bắt đầu animation khi scene hiển thị
         document.addEventListener("click", playMusicOnce, { once: true });
         document.addEventListener("touchstart", playMusicOnce, { once: true });
     }
@@ -367,14 +414,12 @@ function startScan() {
                         html5QrCode.stop().then(() => {
                             scanSection.style.display = 'none';
                             scene.style.display = 'block';
-                            startFallingAnimation(); // Bắt đầu animation khi quét thành công
                             document.addEventListener("click", playMusicOnce, { once: true });
                             document.addEventListener("touchstart", playMusicOnce, { once: true });
                         }).catch(err => {
                             console.error("Lỗi dừng camera:", err);
                             scanSection.style.display = 'none';
                             scene.style.display = 'block';
-                            startFallingAnimation();
                             document.addEventListener("click", playMusicOnce, { once: true });
                             document.addEventListener("touchstart", playMusicOnce, { once: true });
                         });
