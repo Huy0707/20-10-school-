@@ -155,6 +155,8 @@ const readerDiv = document.getElementById('reader');
 const qrImage = document.getElementById('qrImage');
 let html5QrCode;
 
+let activeTexts = []; // Mảng lưu trữ các phần tử đang rơi
+
 function createFallingText() {
     const text = document.createElement("div");
     text.className = "falling-text";
@@ -163,22 +165,46 @@ function createFallingText() {
     const cellWidth = window.innerWidth / gridSize;
     const cellHeight = window.innerHeight / gridSize;
     const gridX = Math.floor(Math.random() * gridSize);
-    const gridY = Math.floor(Math.random() * gridSize);
     const left = Math.min(gridX * cellWidth + Math.random() * (cellWidth * 0.8), window.innerWidth - 50);
-    const left = gridX * cellWidth + Math.random() * (cellWidth * 0.8);
-    text.style.left = `${Math.random() * window.innerWidth}px`;
+
+    // Tính toán top ban đầu và tránh chồng lấn
+    let top = -10 * (Math.random() + 0.1) * vhToPx(1); // Bắt đầu từ -10vh ngẫu nhiên
+    let overlap = true;
+
+    while (overlap) {
+        overlap = false;
+        for (let activeText of activeTexts) {
+            const activeTop = parseFloat(activeText.style.top) || 0;
+            const activeHeight = activeText.getBoundingClientRect().height;
+            const newHeight = text.getBoundingClientRect().height;
+            if (Math.abs(top - activeTop) < (activeHeight + newHeight) / 2) {
+                overlap = true;
+                top -= activeHeight + 10; // Dịch xuống thêm 10px để tránh chồng
+                break;
+            }
+        }
+    }
+
+    text.style.left = `${left}px`;
+    text.style.top = `${top}px`; // Áp dụng top đã điều chỉnh
     text.style.transform = `translateY(0)`;
     text.style.willChange = "transform, opacity";
+
+    // Tính chiều cao thực tế và thời gian rơi
     const screenHeight = Math.max(document.documentElement.scrollHeight, window.innerHeight);
-    const fallDistance = screenHeight + 100; // Thêm 100px để vượt ra ngoài
-    const fallTime = (fallDistance / window.innerHeight) * 6; // Tính thời gian dựa trên chiều cao (tối thiểu 6s)
+    const fallDistance = screenHeight + 100;
+    const fallTime = (fallDistance / window.innerHeight) * 6;
 
     text.style.animation = `fall ${fallTime}s linear forwards`;
     scene.appendChild(text);
+    activeTexts.push(text);
 
     setTimeout(() => {
-        if (text.parentElement) text.remove();
-    }, 8000);
+        if (text.parentElement) {
+            text.remove();
+            activeTexts = activeTexts.filter(t => t !== text); // Xóa khỏi mảng khi hết
+        }
+    }, fallTime * 1000);
 }
 
 function createFallingIcon() {
@@ -189,26 +215,54 @@ function createFallingIcon() {
     const cellWidth = window.innerWidth / gridSize;
     const cellHeight = window.innerHeight / gridSize;
     const gridX = Math.floor(Math.random() * gridSize);
-    const gridY = Math.floor(Math.random() * gridSize);
     const left = Math.min(gridX * cellWidth + Math.random() * (cellWidth * 0.8), window.innerWidth - 30);
-    const left = gridX * cellWidth + Math.random() * (cellWidth * 0.8);
-    icon.style.left = `${Math.random() * window.innerWidth}px`;
+
+    // Tính toán top ban đầu và tránh chồng lấn với text
+    let top = -10 * (Math.random() + 0.1) * vhToPx(1);
+    let overlap = true;
+
+    while (overlap) {
+        overlap = false;
+        for (let activeText of activeTexts) {
+            const activeTop = parseFloat(activeText.style.top) || 0;
+            const activeHeight = activeText.getBoundingClientRect().height;
+            const newHeight = icon.getBoundingClientRect().height;
+            if (Math.abs(top - activeTop) < (activeHeight + newHeight) / 2) {
+                overlap = true;
+                top -= activeHeight + 10;
+                break;
+            }
+        }
+    }
+
+    icon.style.left = `${left}px`;
+    icon.style.top = `${top}px`; // Áp dụng top đã điều chỉnh
     icon.style.transform = `translateY(0)`;
     icon.style.willChange = "transform, opacity";
+
     const screenHeight = Math.max(document.documentElement.scrollHeight, window.innerHeight);
     const fallDistance = screenHeight + 100;
     const fallTime = (fallDistance / window.innerHeight) * 6;
 
     icon.style.animation = `fall ${fallTime}s linear forwards`;
     scene.appendChild(icon);
+    activeTexts.push(icon);
 
     setTimeout(() => {
-        if (icon.parentElement) icon.remove();
-    }, 8000);
+        if (icon.parentElement) {
+            icon.remove();
+            activeTexts = activeTexts.filter(t => t !== icon);
+        }
+    }, fallTime * 1000);
+}
+
+// Hàm chuyển đổi vh thành px
+function vhToPx(vh) {
+    return (vh * window.innerHeight) / 100;
 }
 
 setInterval(() => {
-    if (scene.style.display === 'block' && scene.childElementCount < 15) {
+    if (scene.style.display === 'block' && scene.childElementCount < 8) {
         createFallingText();
         createFallingIcon();
     }
