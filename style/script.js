@@ -146,7 +146,7 @@ const texts = [
     "🎉Chúc mừng 20-10 Võ Phương Trinh 12/7 nhó🎉",
 ];
 
-const icons = ["🎂", "🎉", "💖", "🌟", "💐", "🎁", "✨", "💝"];
+const icons = ["🎉"];
 
 const qrSection = document.getElementById('qr-section');
 const scanSection = document.getElementById('scan-section');
