@@ -146,7 +146,6 @@ const texts = [
     "🎉Chúc mừng 20-10 Võ Phương Trinh 12/7 nhó🎉",
 ];
 
-const icons = ["🎉"];
 
 const qrSection = document.getElementById('qr-section');
 const scanSection = document.getElementById('scan-section');
@@ -155,38 +154,18 @@ const readerDiv = document.getElementById('reader');
 const qrImage = document.getElementById('qrImage');
 let html5QrCode;
 
-let activeTexts = []; // Mảng lưu trữ các phần tử đang rơi
-
-function createFallingText() {
+function createFallingText(index = 0) {
+    if (index >= texts.length) return; // Dừng khi hết danh sách
     const text = document.createElement("div");
     text.className = "falling-text";
-    text.textContent = texts[Math.floor(Math.random() * texts.length)];
+    text.textContent = texts[index];
     const gridSize = 5;
     const cellWidth = window.innerWidth / gridSize;
-    const cellHeight = window.innerHeight / gridSize;
     const gridX = Math.floor(Math.random() * gridSize);
     const left = Math.min(gridX * cellWidth + Math.random() * (cellWidth * 0.8), window.innerWidth - 50);
 
-    // Tính toán top ban đầu và tránh chồng lấn
-    let top = -10 * (Math.random() + 0.1) * vhToPx(1); // Bắt đầu từ -10vh ngẫu nhiên
-    let overlap = true;
-
-    while (overlap) {
-        overlap = false;
-        for (let activeText of activeTexts) {
-            const activeTop = parseFloat(activeText.style.top) || 0;
-            const activeHeight = activeText.getBoundingClientRect().height;
-            const newHeight = text.getBoundingClientRect().height;
-            if (Math.abs(top - activeTop) < (activeHeight + newHeight + 20)) { // Tăng khoảng cách tối thiểu
-                overlap = true;
-                top -= activeHeight + 20; // Điều chỉnh top để tránh chồng lấn
-                break;
-            }
-        }
-    }
-
     text.style.left = `${left}px`;
-    text.style.top = `${top}px`;
+    text.style.top = `-10vh`;
     text.style.transform = `translateY(0)`;
     text.style.willChange = "transform, opacity";
 
@@ -196,13 +175,10 @@ function createFallingText() {
 
     text.style.animation = `fall ${fallTime}s linear forwards`;
     scene.appendChild(text);
-    activeTexts.push(text);
 
     setTimeout(() => {
-        if (text.parentElement) {
-            text.remove();
-            activeTexts = activeTexts.filter(t => t !== text);
-        }
+        if (text.parentElement) text.remove();
+        createFallingText(index + 1); // Tạo chữ tiếp theo sau khi chữ hiện tại rơi xong
     }, fallTime * 1000);
 }
 
@@ -212,30 +188,11 @@ function createFallingIcon() {
     icon.textContent = icons[Math.floor(Math.random() * icons.length)];
     const gridSize = 5;
     const cellWidth = window.innerWidth / gridSize;
-    const cellHeight = window.innerHeight / gridSize;
     const gridX = Math.floor(Math.random() * gridSize);
     const left = Math.min(gridX * cellWidth + Math.random() * (cellWidth * 0.8), window.innerWidth - 30);
 
-    // Tính toán top ban đầu và tránh chồng lấn
-    let top = -10 * (Math.random() + 0.1) * vhToPx(1);
-    let overlap = true;
-
-    while (overlap) {
-        overlap = false;
-        for (let activeText of activeTexts) {
-            const activeTop = parseFloat(activeText.style.top) || 0;
-            const activeHeight = activeText.getBoundingClientRect().height;
-            const newHeight = icon.getBoundingClientRect().height;
-            if (Math.abs(top - activeTop) < (activeHeight + newHeight + 20)) {
-                overlap = true;
-                top -= activeHeight + 20;
-                break;
-            }
-        }
-    }
-
     icon.style.left = `${left}px`;
-    icon.style.top = `${top}px`;
+    icon.style.top = `-10vh`;
     icon.style.transform = `translateY(0)`;
     icon.style.willChange = "transform, opacity";
 
@@ -245,26 +202,20 @@ function createFallingIcon() {
 
     icon.style.animation = `fall ${fallTime}s linear forwards`;
     scene.appendChild(icon);
-    activeTexts.push(icon);
 
     setTimeout(() => {
-        if (icon.parentElement) {
-            icon.remove();
-            activeTexts = activeTexts.filter(t => t !== icon);
-        }
+        if (icon.parentElement) icon.remove();
     }, fallTime * 1000);
 }
 
-function vhToPx(vh) {
-    return (vh * window.innerHeight) / 100;
+function startFallingAnimation() {
+    createFallingText(0); // Bắt đầu với chữ đầu tiên
+    setInterval(() => {
+        if (scene.style.display === 'block' && scene.childElementCount < 1) {
+            createFallingIcon(); // Thêm icon ngẫu nhiên khi không có chữ
+        }
+    }, 2000); // Thêm icon mỗi 2 giây nếu không có chữ
 }
-
-setInterval(() => {
-    if (scene.style.display === 'block' && scene.childElementCount < 15) {
-        createFallingText();
-        createFallingIcon();
-    }
-}, 600);
 
 function playMusicOnce() {
     if (audio.paused && scene.style.display === 'block') {
@@ -381,6 +332,7 @@ function checkQueryShowGreeting() {
         qrSection.style.display = 'none';
         scanSection.style.display = 'none';
         scene.style.display = 'block';
+        startFallingAnimation(); // Bắt đầu animation khi scene hiển thị
         document.addEventListener("click", playMusicOnce, { once: true });
         document.addEventListener("touchstart", playMusicOnce, { once: true });
     }
@@ -408,12 +360,14 @@ function startScan() {
                         html5QrCode.stop().then(() => {
                             scanSection.style.display = 'none';
                             scene.style.display = 'block';
+                            startFallingAnimation(); // Bắt đầu animation khi quét thành công
                             document.addEventListener("click", playMusicOnce, { once: true });
                             document.addEventListener("touchstart", playMusicOnce, { once: true });
                         }).catch(err => {
                             console.error("Lỗi dừng camera:", err);
                             scanSection.style.display = 'none';
                             scene.style.display = 'block';
+                            startFallingAnimation();
                             document.addEventListener("click", playMusicOnce, { once: true });
                             document.addEventListener("touchstart", playMusicOnce, { once: true });
                         });
